@@ -28,14 +28,12 @@ When you restrict a building's workers, anyone already working there who isn't a
 
 ## How it works (summary)
 - Hiring: the central employment setter (`StatsWork$Work.set`) refuses the assignment; the instance draw (`RoomEmployments$RaceGroup.setWork`) skips buildings that don't accept the humanoid; `EmployerSimple.employ` (guards, trainers, university, asylum) reports failure if it was refused.
-- Allocation: if no active instance of a building type accepts a species, its priority there is reported as 0, and the game's allocator doesn't reserve slots for it.
+- Allocation: the game hands out job slots per building type, not per building. While its allocator runs (`Employer.update`), a species stops getting slots in a type once it holds as many as the active buildings that accept it can take, and any excess is handed back, so the rest go to the next species in line. The priority screen always shows and edits your real values.
 - Service: `AIModules.getNextPlan` marks who is choosing the plan; `SFinderRoomService.getReservable` hides service tiles of rooms that exclude that person.
 
 ## Known limits
-- On the work priority screen, a species fully blocked in a building type shows priority 0; clicking the priority buttons in that state writes starting from 0.
 - Swapping jobs between two workers can leave a room 1 person over target for a moment if one side is refused; the game corrects it on its own.
 - Anyone already on their way to the service when the users filter changes finishes the trip.
-- If slots for a species are reserved by the allocator in a building type where only some buildings accept it, some may stay empty until the next allocation round.
 
 ## Not implemented
 - Nothing from the concept was left out. The entry lives in the bottom bar's Tools menu (no dedicated hotkey or tool search).

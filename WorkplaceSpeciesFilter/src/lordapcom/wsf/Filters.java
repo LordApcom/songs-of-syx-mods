@@ -7,7 +7,6 @@ import java.util.IdentityHashMap;
 import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
 
-import game.GAME;
 import init.type.HGROUP;
 import init.type.WGROUP;
 import settlement.entity.humanoid.Humanoid;
@@ -211,58 +210,138 @@ final class Filters {
 		refresh();
 	}
 
-	// ---- effective worker priority (see PrioMixin) ----
+	// ---- job allocation (see EmployerMixin, PrioMixin) ----
 
+	/** The game's job allocator while it runs (Employer.update), else null: the priority screen sees real values. */
+	static Object allocator;
 	private static LIST<RoomEmployment> ownersFor;
 	private static final IdentityHashMap<Object, RoomEmployment> owners = new IdentityHashMap<>();
-	private static byte[][] cache; // 0 unknown, 1 open, 2 blocked
-	private static int cacheVer = -1, cacheAt;
+	private static Method wGet, wAdd;
 
 	/**
-	 * A species that no active instance of a workplace type accepts gets priority 0 there, so the vanilla
-	 * allocator stops reserving job slots for it and hands them to species that can actually work.
+	 * The allocator hands out job slots per workplace type and species, not per building. In a type where some
+	 * active building refuses someone, a species gets priority 0 once the buildings that accept it are full with the
+	 * slots already handed out, so the rest go to the next species in line instead of waiting for people the
+	 * buildings refuse.
 	 */
-	static int effectivePrio(Object prio, int vanilla, WGROUP g) {
-		if (vanilla == 0 || g == null || !anyW)
+	static int effectivePrio(Object prio, int vanilla, WGROUP g) throws Exception {
+		Object al = allocator;
+		if (al == null || vanilla == 0 || g == null || !anyW)
 			return vanilla;
+		RoomEmployment e = ownerOf(prio);
+		if (e == null)
+			return vanilla;
+		Object[] buckets = vizardalpha.polyphon.api.Shadow.get(al, "buckets");
+		int[] left = place(e, buckets[e.index()]);
+		return left == null || left[WGROUP.all().size() + g.index] > 0 ? vanilla : 0;
+	}
+
+	/** After each allocator step: give back slots no building of the type can seat (see place). */
+	static void trim(Object al) throws Exception {
+		if (!anyW)
+			return;
+		Object[] buckets = vizardalpha.polyphon.api.Shadow.get(al, "buckets");
+		Object available = vizardalpha.polyphon.api.Shadow.get(al, "available");
+		LIST<RoomEmployment> all = SETT.ROOMS().employment.ALL();
+		int n = WGROUP.all().size();
+		for (int i = 0; i < buckets.length && i < all.size(); i++) {
+			int[] r = place(all.get(i), buckets[i]);
+			if (r == null)
+				continue;
+			for (int gi = 0; gi < n; gi++) {
+				if (r[gi] > 0) {
+					WGROUP g = WGROUP.all().get(gi);
+					wAdd.invoke(buckets[i], g, -r[gi]);
+					wAdd.invoke(available, g, r[gi]);
+				}
+			}
+		}
+	}
+
+	/**
+	 * Seats the slots each species holds in this type into the active buildings that accept it, most restricted
+	 * species first. Returns null when no active building of the type has a worker filter; else, per group, the slots
+	 * that found no seat ([0, n)) and the free seats left in buildings that accept it ([n, 2n)).
+	 * ponytail: greedy, exact when the accepted sets nest (the usual case); a max-flow would be exact always.
+	 */
+	private static int[] place(RoomEmployment e, Object bucket) throws Exception {
+		RoomBlueprintIns<?> b = e.blueprint();
+		int m = 0;
+		boolean filtered = false;
+		for (int i = 0; i < b.instancesSize(); i++) {
+			RoomInstance ins = b.getInstance(i);
+			if (ins.active()) {
+				m++;
+				Entry en = MAP.get(ins);
+				filtered |= en != null && en.w != null;
+			}
+		}
+		if (!filtered)
+			return null;
+		int n = WGROUP.all().size();
+		int[] seats = new int[m];
+		boolean[][] ok = new boolean[n][m];
+		int[] accepts = new int[n];
+		int k = 0;
+		for (int i = 0; i < b.instancesSize(); i++) {
+			RoomInstance ins = b.getInstance(i);
+			if (!ins.active())
+				continue;
+			seats[k] = ins.employees().target();
+			Entry en = MAP.get(ins);
+			for (int gi = 0; gi < n; gi++) {
+				WGROUP g = WGROUP.all().get(gi);
+				HGROUP hg = HGROUP.get(g.type.CLASS, g.race);
+				if (en == null || allows(en.w, hg)) {
+					ok[gi][k] = true;
+					accepts[gi]++;
+				}
+			}
+			k++;
+		}
+		Integer[] order = new Integer[n];
+		for (int gi = 0; gi < n; gi++)
+			order[gi] = gi;
+		Arrays.sort(order, (x, y) -> accepts[x] - accepts[y]);
+		int[] r = new int[2 * n];
+		for (int gi : order) {
+			int have = held(bucket, WGROUP.all().get(gi));
+			for (int i = 0; i < m && have > 0; i++) {
+				if (ok[gi][i]) {
+					int t = Math.min(have, seats[i]);
+					seats[i] -= t;
+					have -= t;
+				}
+			}
+			r[gi] = have;
+		}
+		for (int gi = 0; gi < n; gi++)
+			for (int i = 0; i < m; i++)
+				if (ok[gi][i])
+					r[n + gi] += seats[i];
+		return r;
+	}
+
+	private static int held(Object workers, WGROUP g) throws Exception {
+		if (wGet == null) {
+			Class<?> w = Class.forName("settlement.room.main.employment.Employer$Workers");
+			Method get = w.getDeclaredMethod("get", WGROUP.class), add = w.getDeclaredMethod("add", WGROUP.class, int.class);
+			get.setAccessible(true);
+			add.setAccessible(true);
+			wAdd = add;
+			wGet = get;
+		}
+		return (Integer) wGet.invoke(workers, g);
+	}
+
+	private static RoomEmployment ownerOf(Object prio) {
 		LIST<RoomEmployment> all = SETT.ROOMS().employment.ALL();
 		if (all != ownersFor) {
 			ownersFor = all;
 			owners.clear();
 			for (RoomEmployment e : Lists.of(all))
 				owners.put(e.priorities, e);
-			cache = null;
 		}
-		RoomEmployment e = owners.get(prio);
-		if (e == null)
-			return vanilla;
-		int now = GAME.updateI();
-		if (cache == null || cacheVer != version || now - cacheAt > 120 || now < cacheAt) {
-			cache = new byte[all.size()][WGROUP.all().size()];
-			cacheVer = version;
-			cacheAt = now;
-		}
-		byte c = cache[e.index()][g.index];
-		if (c == 0)
-			cache[e.index()][g.index] = c = (byte) (blocked(e, g) ? 2 : 1);
-		return c == 2 ? 0 : vanilla;
-	}
-
-	private static boolean blocked(RoomEmployment e, WGROUP g) {
-		HGROUP hg = HGROUP.get(g.type.CLASS, g.race);
-		if (hg == null)
-			return false;
-		RoomBlueprintIns<?> b = e.blueprint();
-		boolean any = false;
-		for (int i = 0; i < b.instancesSize(); i++) {
-			RoomInstance ins = b.getInstance(i);
-			if (!ins.active())
-				continue;
-			any = true;
-			Entry en = MAP.get(ins);
-			if (en == null || allows(en.w, hg))
-				return false;
-		}
-		return any;
+		return owners.get(prio);
 	}
 }

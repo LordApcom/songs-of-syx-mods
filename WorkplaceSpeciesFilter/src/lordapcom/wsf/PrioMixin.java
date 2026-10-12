@@ -4,7 +4,7 @@ import init.type.WGROUP;
 import vizardalpha.polyphon.api.Mixin;
 import vizardalpha.polyphon.api.ModifyReturn;
 
-/** Reports priority 0 for species that no instance of a workplace type accepts, so slots are not wasted on them. */
+/** While the job allocator runs, a species gets priority 0 in a workplace type once the buildings that accept it are full (see Filters.effectivePrio). */
 @Mixin(target = "settlement.room.main.employment.RoomEmployment$GRoupInt")
 public final class PrioMixin {
 
