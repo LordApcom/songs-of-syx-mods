@@ -1,18 +1,18 @@
-# Compila o mod e monta a pasta pronta para o jogo em dist\<Nome>.
-# Uso: .\build.ps1 -Polyphon <caminho\Polyphon.jar>            (só compila)
-#      .\build.ps1 -Polyphon <caminho\Polyphon.jar> -Deploy    (compila e copia para %APPDATA%\songsofsyx\mods)
-# -Game e -Polyphon também podem vir das variáveis de ambiente SOS_GAME e SOS_POLYPHON.
+# Builds the mod and assembles the game-ready folder in dist\<Name>.
+# Usage: .\build.ps1 -Polyphon <path\Polyphon.jar>            (build only)
+#        .\build.ps1 -Polyphon <path\Polyphon.jar> -Deploy    (build and copy to %APPDATA%\songsofsyx\mods)
+# -Game and -Polyphon can also come from the SOS_GAME and SOS_POLYPHON environment variables.
 param(
     [switch]$Deploy,
-    # Pasta do jogo, onde fica SongsOfSyx.jar. Padrão: instalação comum da Steam.
+    # Game folder, where SongsOfSyx.jar lives. Default: the standard Steam install.
     [string]$Game = $(if ($env:SOS_GAME) { $env:SOS_GAME } else { 'C:\Program Files (x86)\Steam\steamapps\common\Songs of Syx' }),
-    # Polyphon.jar, dentro da pasta V71\script do mod Polyphon instalado.
+    # Polyphon.jar, inside the V71\script folder of the installed Polyphon mod.
     [string]$Polyphon = $env:SOS_POLYPHON
 )
 $ErrorActionPreference = 'Stop'
 
-if (-not (Test-Path "$Game\SongsOfSyx.jar")) { throw "SongsOfSyx.jar não encontrado em '$Game' (use -Game <pasta do jogo>)" }
-if (-not $Polyphon -or -not (Test-Path $Polyphon)) { throw 'Informe o Polyphon.jar: -Polyphon <caminho> ou a variável SOS_POLYPHON' }
+if (-not (Test-Path "$Game\SongsOfSyx.jar")) { throw "SongsOfSyx.jar not found in '$Game' (use -Game <game folder>)" }
+if (-not $Polyphon -or -not (Test-Path $Polyphon)) { throw 'Point to Polyphon.jar: -Polyphon <path> or the SOS_POLYPHON variable' }
 
 $Name  = Split-Path -Leaf $PSScriptRoot
 $build = Join-Path $PSScriptRoot 'build'
@@ -22,11 +22,11 @@ New-Item -ItemType Directory -Force "$build\classes", "$dist\V71\script" | Out-N
 
 $sources = Get-ChildItem -Recurse -Filter *.java (Join-Path $PSScriptRoot 'src') | ForEach-Object FullName
 javac --release 21 -encoding UTF-8 -nowarn -cp "$Game\SongsOfSyx.jar;$Polyphon" -d "$build\classes" $sources
-if ($LASTEXITCODE -ne 0) { throw 'javac falhou' }
+if ($LASTEXITCODE -ne 0) { throw 'javac failed' }
 
 Copy-Item -Recurse (Join-Path $PSScriptRoot 'resources\*') "$build\classes"
 jar --create --file "$dist\V71\script\$Name.jar" -C "$build\classes" .
-if ($LASTEXITCODE -ne 0) { throw 'jar falhou' }
+if ($LASTEXITCODE -ne 0) { throw 'jar failed' }
 
 Copy-Item (Join-Path $PSScriptRoot '_Info.txt') $dist
 $assets = Join-Path $PSScriptRoot 'assets'
@@ -35,9 +35,9 @@ Write-Host "OK: $dist"
 
 if ($Deploy) {
     $target = Join-Path $env:APPDATA "songsofsyx\mods\$Name"
-    # falha alto se o jogo estiver aberto (jar travado), para não deixar uma cópia pela metade
+    # fails loudly if the game is running (jar locked), so a half-copied mod is never left behind
     if (Test-Path $target) { Remove-Item -Recurse -Force $target }
     New-Item -ItemType Directory -Force $target | Out-Null
     Copy-Item -Recurse "$dist\*" $target
-    Write-Host "Instalado em $target"
+    Write-Host "Installed to $target"
 }

@@ -15,6 +15,6 @@ final class Log {
 
 	static void once(String where, Throwable t) {
 		if (seen.add(where))
-			LOG.ln("[CartographersDream] " + where + " falhou, usando o comportamento do jogo: " + t);
+			LOG.ln("[CartographersDream] " + where + " failed, using the vanilla behavior: " + t);
 	}
 }

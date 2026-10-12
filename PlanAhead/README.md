@@ -1,30 +1,30 @@
 # Plan Ahead
 
-Mod de código para Songs of Syx V71 (0.71.44). Requer o Polyphon.
+Code mod for Songs of Syx V71 (0.71.44). Requires Polyphon.
 
-## O que faz
-- Todo edifício fica clicável no menu de construção, mesmo com a tecnologia ainda bloqueada.
-- Você arrasta a área normalmente. Se a tecnologia já foi pesquisada, constrói como sempre.
-- Se ainda está bloqueada, a construção nasce no Modo de Planejamento do jogo: reserva o espaço, sem trabalhadores nem recursos.
-- O jogo recusa ativar o plano (ferramenta Ativar) enquanto a tecnologia estiver bloqueada. Depois da pesquisa, ative como qualquer plano.
-- Vale também para edifícios de mods de dados: qualquer sala com requisito de tecnologia é tratada igual.
-- Colar/copiar (Copiar sala, cópia em massa) e desenhos salvos (Ctrl+clique / seletor de blueprints) também aceitam salas bloqueadas; elas viram planos dormentes.
-- Decorações que gastam recursos (estátuas etc.) são salas comuns e entram no mesmo fluxo.
+## What it does
+- Every building is clickable in the build menu, even when its technology is still locked.
+- You drag out the area as usual. If the technology is already researched, it builds as always.
+- If it's still locked, the construction is created in the game's Planning Mode: it reserves the space, with no workers or resources.
+- The game refuses to activate the plan (Activate tool) while the technology is locked. After the research, activate it like any other plan.
+- Also works for buildings from data mods: any room with a technology requirement is handled the same way.
+- Paste/copy (Copy room, bulk copy) and saved blueprints (Ctrl+click / blueprint picker) also accept locked rooms; they become dormant plans.
+- Decorations that cost resources (statues, etc.) are regular rooms and follow the same flow.
 
-## Como usar
-Abra o menu de construção, escolha qualquer edifício (mesmo cinza no jogo original) e desenhe. Ele aparece como plano dormente. Quando a pesquisa terminar, use a ferramenta Ativar (ou o modo de planejamento desligado + Ativar) sobre o plano.
+## How to use
+Open the build menu, pick any building (even ones grayed out in the base game) and draw it. It appears as a dormant plan. When the research finishes, use the Activate tool (or turn Planning Mode off and Activate) on the plan.
 
-## Segurança em saves
-Não guarda dados importantes no save (só um inteiro de versão). Pode remover o mod: planos viram construções dormentes normais. Se remover com planos de salas bloqueadas, ative-os só após a pesquisa (sem o mod nada impede a ativação antes).
+## Save safety
+Stores nothing important in the save (just a version integer). You can remove the mod: plans become normal dormant constructions. If you remove it while holding plans for locked rooms, only activate them after the research (without the mod nothing stops early activation).
 
-## Compatibilidade
-Usa mixins do Polyphon (sem substituir classes do jogo). Pontos: `Lockable.passes`, `CONSTRUCTION.pcreate`, `ConstructionInstance.jobToggle`, `StateManager.activate`.
+## Compatibility
+Uses Polyphon mixins (no game classes replaced). Hooks: `Lockable.passes`, `CONSTRUCTION.pcreate`, `ConstructionInstance.jobToggle`, `StateManager.activate`.
 
-## Não implementado
-- Estradas, muros/estruturas e fortificações atrás de tecnologia: não são salas, são "jobs" com travas verificadas em vários lugares (cada tipo de job, `getPlacable`, textos de bloqueio). Não há um ponto único e limpo para liberar e depois bloquear a ativação.
-- Salas gratuitas, ao ar livre e sem piso (construídas na hora pelo jogo, sem etapa de planejamento) continuam travadas: planejá-las as construiria instantaneamente.
-- Paredes de um plano, ativadas individualmente pela ferramenta Ativar sobre a parede, podem ser construídas (a sala em si continua bloqueada).
-- O bug do jogo de colar planos dentro de montanha (hospital, enfermaria etc.) não foi reproduzido; o mod corrige apenas a recusa de copiar salas bloqueadas.
+## Not implemented
+- Roads, walls/structures and fortifications behind technology: these aren't rooms but "jobs", with locks checked in many places (each job type, `getPlacable`, lock texts). There's no single clean point to unlock them and still block activation later.
+- Free, outdoor rooms with no floor (built instantly by the game, with no planning step) stay locked: planning them would build them instantly.
+- A plan's walls, activated one by one with the Activate tool on the wall, can be built (the room itself stays locked).
+- The game bug where pasting plans inside a mountain fails (hospital, infirmary, etc.) wasn't reproduced; the mod only fixes the refusal to copy locked rooms.
 
-## Créditos
-Requer o Polyphon (VizardAlpha).
+## Credits
+Requires Polyphon (VizardAlpha).

@@ -1,68 +1,45 @@
-# Species Customs Gate (reescrita para V71.44 sobre Polyphon)
+# Species Customs Gate (rewrite for V71.44 on Polyphon)
 
-Cada portao (sala `GATEHOUSE`) ganha o seu proprio filtro de **especie x classe (cidadao / escravo)** e uma **seta**
-que pode ser invertida. Nenhuma classe do jogo e substituida: tudo e feito com ganchos do Polyphon.
+Each gate (room `GATEHOUSE`) gets its own **species x class (citizen / slave)** filter and an **arrow** that can be flipped. No game class is replaced: everything is done with Polyphon hooks.
 
-## Como usar
-- **Clique direito** num tile de portao (ou tecla **F** com o mouse sobre o portao) abre o painel do filtro.
-  O clique esquerdo continua trancando/destrancando, como no jogo base.
-- Painel: grade de especies (linha de cidadaos, linha de escravos), atalhos **Allow all / Citizens only / Slaves only /
-  Block all**, botao **Invert arrow** e **Apply**.
-- A dica flutuante do portao mostra: `Everyone`, `NONE allowed` ou `Allowed (x/y): lista`, mais a direcao da seta.
-- Setas amarelas permanentes aparecem sobre todos os tiles de portao.
-- Tudo fica gravado no save (por portao: ancora, seta invertida, bits). Salvo sem o mod = portoes abertos; salvo com o mod e
-  carregado sem ele = o jogo ignora o bloco.
+## How to use
+- **Right-click** a gate tile (or press **F** with the mouse over the gate) to open the filter panel. Left-click still locks/unlocks, as in the base game.
+- Panel: a species grid (citizen row, slave row), shortcuts **Allow all / Citizens only / Slaves only / Block all**, an **Invert arrow** button and **Apply**.
+- The gate tooltip shows `Everyone`, `NONE allowed` or `Allowed (x/y): list`, plus the arrow direction.
+- Permanent yellow arrows appear over every gate tile.
+- Everything is stored in the save (per gate: anchor, flipped arrow, bits). Saved without the mod = open gates; saved with the mod and loaded without it = the game ignores the block.
 
-## Regras de passagem
-- Quem **e permitido** passa nos dois sentidos.
-- Quem **nao e permitido** so entra pelo lado de tras da seta, em linha reta, e sai pela frente. Contra a seta ou pelas
-  laterais, o portao age como parede para essa pessoa.
-- **Hostis, rebeldes, turistas e soldados** sempre passam (soldados: escolha minha, senao a defesa quebra).
-  Nobres, criancas e prisioneiros (sem especie/classe filtravel) tambem passam.
-- Dentro do corredor do portao o movimento e livre; quem aparece ja dentro (teletransporte, filtro mudou) nunca e preso.
+## Passage rules
+- Anyone who **is allowed** passes both ways.
+- Anyone who **is not allowed** can only enter from the back side of the arrow, moving straight, and exit through the front. Against the arrow or from the sides, the gate acts as a wall for that person.
+- **Hostiles, rioters, tourists and soldiers** always pass (soldiers: a design choice, otherwise defense breaks). Nobles, children and prisoners (no filterable species/class) also pass.
+- Inside the gate corridor, movement is free; anyone who ends up inside (teleport, filter changed) is never trapped.
 
-## Aviso: seta para dentro
-Quem nao e permitido e esta do lado de dentro de uma seta que aponta para dentro **nao sai**, nem para comer ou dormir
-(planos de trabalho cruzam a seta). Decisao de desenho: a seta segura de verdade, entao ponha comida e casas do lado
-de dentro de um cercado assim.
+## Warning: arrow pointing inward
+Someone who is not allowed and is on the inner side of an arrow pointing inward **can't get out**, not even to eat or sleep (work plans may cross the arrow). This is by design: the arrow really holds, so put food and housing inside an enclosure set up this way.
 
-## Como os presos foram evitados (por desenho)
-1. **Decide na hora de escolher o plano**: o buscador de servicos/consumo nao oferece um alvo que o humanoide alcanca mas do
-   qual nao consegue voltar (lazer). Planos de trabalho podem cruzar com a seta.
-2. **Alcance em tres estados** (`CONNECTED / DISCONNECTED / BUDGET_EXHAUSTED`): so "DISCONNECTED provado" bloqueia; sem
-   orcamento no tick = permite e tenta de novo depois. So conta como desconectado o que e alcancavel *sem* portoes e nao
-   *com* eles (regioes isoladas por outros motivos nao sao culpa do portao).
-3. Mapa de regioes por especie: o mapa e inundado tratando os portoes restritos como paredes; cada portao vira aresta de
-   sentido unico entre regioes (a seta). Reaproveitado pela API.
-4. Estado por sessao: `InstanceState` (por jogo e por humanoide), nada estatico que sobreviva entre partidas. Limpeza ao
-   remover o humanoide e ao trocar de plano.
-5. Rede de seguranca minima: 8 batidas num portao em ~4 s -> o plano e interrompido, o alvo e esquecido por ~30 s nas
-   buscas de servico e, na 3a vez em ~2 min, o humanoide perde o emprego.
-6. Buscas SFINDER "qualquer tile" (estoque, recursos, trabalhos) ficam **sem filtro** de proposito: filtrar fazia os
-   carregadores pararem.
+## How people getting stuck was avoided (by design)
+1. **Decide when the plan is chosen**: the service/consumption finder doesn't offer a target the humanoid can reach but can't come back from (leisure). Work plans may cross the arrow.
+2. **Three-state reachability** (`CONNECTED / DISCONNECTED / BUDGET_EXHAUSTED`): only a proven "DISCONNECTED" blocks; running out of budget in a tick = allow and try again later. Only targets reachable *without* gates but not *with* them count as disconnected (regions isolated for other reasons aren't the gate's fault).
+3. Per-species region map: the map is flood-filled treating restricted gates as walls; each gate becomes a one-way edge between regions (the arrow). Reused by the API.
+4. Per-session state: `InstanceState` (per game and per humanoid), nothing static that survives between games. Cleaned up when a humanoid is removed and when its plan changes.
+5. Minimal safety net: 8 bumps into a gate within ~4 s -> the plan is interrupted, the target is forgotten for ~30 s in service searches and, the 3rd time within ~2 min, the humanoid loses its job.
+6. "Any tile" SFINDER searches (storage, resources, jobs) are deliberately **unfiltered**: filtering them made haulers stop.
 
-## API para outros mods
-`lordapcom.gate.GateApi.canReach(Humanoid h, int tx, int ty)` -> `true` se o mod esta inativo, h e hostil/turista, a especie
-e permitida em todos os portoes, o alvo e alcancavel respeitando filtros e setas, ou o orcamento acabou.
-`false` apenas quando provado desconectado. (O Workplace Species Filter ja chama por reflexao.)
+## API for other mods
+`lordapcom.gate.GateApi.canReach(Humanoid h, int tx, int ty)` -> `true` if the mod is inactive, h is hostile/a tourist, the species is allowed at every gate, the target is reachable respecting filters and arrows, or the budget ran out. `false` only when proven disconnected. (Workplace Species Filter already calls it via reflection.)
 
-## Compatibilidade
-- Requer **Polyphon** (>= 0.2.0). Ganchos em `ResolverTile.collides`, `Humanoid.collideTile`/`removeAction`,
-  `AIModules.getNextPlan`, `SFinderRoomService.getReservable`. `getNextPlan` e `getReservable` tambem sao usados pelo Workplace
-  Species Filter; o Polyphon encadeia os ganchos, e o meu so adiciona restricoes (nunca libera o que o outro bloqueou).
-- Nao troca nenhuma classe do jogo.
+## Compatibility
+- Requires **Polyphon** (>= 0.2.0). Hooks on `ResolverTile.collides`, `Humanoid.collideTile`/`removeAction`, `AIModules.getNextPlan`, `SFinderRoomService.getReservable`. `getNextPlan` and `getReservable` are also used by Workplace Species Filter; Polyphon chains the hooks, and this one only adds restrictions (it never allows what the other blocked).
+- Replaces no game class.
 
-## Nao implementado
-- **Roteamento em torno do portao**: o pathfinder do jogo e por tile (e roda numa thread propria, com grafo de
-  componentes), sem ponto de gancho que conheca o humanoide. Quem ainda assim escolhe um caminho por um portao proibido
-  e barrado pela colisao e cai na rede de seguranca. Consequencia: a regra "entrada e saida so em passo reto" vale na
-  colisao (so entra pela camada de entrada, vindo de tras da seta), nao no calculo de rota.
-- **Carrocas de carga e caravanas** nao sao `Humanoid` (sao half-entities) e nao passam pela colisao filtrada: cruzam
-  livremente nos dois sentidos, mais permissivo que "so com a seta".
-- **Plano de casa** (`SFinderHome.findHome`): nao filtrado. Recusar a casa desatribui a moradia, pior que o problema.
-- Escolhas de servico feitas na *retomada* de um plano (fora de `getNextPlan`) nao sao filtradas, so as de plano novo.
-- `SFinderWater` e `SFinderIndoors` nao sao filtrados.
-- Painel de diagnostico por cidadao.
+## Not implemented
+- **Routing around the gate**: the game's pathfinder works per tile (and runs on its own thread, with a component graph), with no hook point that knows the humanoid. Anyone who still picks a path through a forbidden gate is stopped by collision and falls into the safety net. As a result, the "enter and exit only in a straight step" rule applies at collision (they can only enter through the entry layer, coming from behind the arrow), not in route planning.
+- **Cargo carts and caravans** aren't `Humanoid` (they're half-entities) and don't go through filtered collision: they cross freely both ways, more permissive than "with the arrow only".
+- **Home plan** (`SFinderHome.findHome`): not filtered. Refusing the home unassigns the housing, which is worse than the problem.
+- Service choices made when *resuming* a plan (outside `getNextPlan`) aren't filtered, only those of a new plan.
+- `SFinderWater` and `SFinderIndoors` aren't filtered.
+- Per-citizen diagnostic panel.
 
-## Creditos
-Requer o Polyphon (VizardAlpha).
+## Credits
+Requires Polyphon (VizardAlpha).

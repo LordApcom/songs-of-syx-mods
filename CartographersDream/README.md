@@ -1,38 +1,39 @@
 # Cartographer's Dream
 
-Mod de código para Songs of Syx V71 (0.71.44). Requer o Polyphon (VizardAlpha).
+Code mod for Songs of Syx V71 (0.71.44). Requires Polyphon (VizardAlpha).
 
-## O que faz
-1. **Mapas de assentamento mais dramáticos.** Aumenta lagos, ilhas dentro de lagos, rios, cadeias de montanhas e a quantidade/tamanho/túneis das cavernas na geração do mapa da cidade (arquivo de dados `GenerationSettlement.txt`).
-2. **Capital quase em qualquer lugar.** Na tela de fundar a capital, só é recusado o local em que os 9 tiles (3x3) são todos montanha. Montanha, lago, oceano, ilhota e rio largo passam.
-3. **Capital cercada de água continua jogável.**
-   - Se a capital começa (ou fica) sem estrada terrestre e o trono toca o mar aberto, imigrantes, caravanas, retorno de tropas, turistas e bandidos usam um **cais** (um tile de costa da ilha). Quem sai (emigrantes, caravanas, caçadores, emissários) anda até o cais e some dali.
-   - No mapa-múndi, se o grafo de caminhos deixa a capital isolada, o mod liga a capital às 2 regiões mais próximas (comércio, exércitos, guarnições e bandidos funcionam). Só adiciona ligação quando detecta isolamento. Não regenera o mapa-múndi.
-   - Capital em oceano ou montanha começa com uma ilha/platô irregular de uns 30 tiles de raio, limpo ao redor do ponto de chegada (senão não haveria onde pousar). Na capital no mar, a faixa de 6 tiles na borda do mapa vira água profunda (a água rasa a até 2 tiles de terra fica). Mapas de terra comum não são alterados.
-   - O aviso "Capital Closed!" do jogo continua se você emparedar o próprio trono: o mod só ajuda quando a capital nasceu isolada pelo mar.
-   - Tentativa de corrigir o problema conhecido "caçadores não trabalham em capital de oceano vazio": enquanto a capital é uma ilha, o jogo passa a achar um "caminho para fora" (o cais).
-   - **Chegada de barco.** Na capital de ilha, quem chega vem no bote de pesca do jogo, em pé no barco com o visual da própria espécie: imigrantes, turistas e tropas que voltam saem da borda do mapa pelo mar e só aparecem em terra quando o barco encosta. Caravanas de mercadores vêm num barco com a mercadoria e seguem a pé depois de desembarcar. Invasores que surgem no mar, ou em terra do outro lado do mar, são levados de barco até o cais mais próximo e desembarcam ali. Vários barcos saindo do mesmo ponto partem em fila.
+## What it does
+1. **More dramatic settlement maps.** Increases lakes, islands inside lakes, rivers, mountain ranges, and the number/size/tunnels of caves in settlement map generation (data file `GenerationSettlement.txt`).
+2. **A capital almost anywhere.** On the found-your-capital screen, the only site rejected is one where all 9 tiles (3x3) are mountain. Mountain, lake, ocean, islet and wide river are all allowed.
+3. **A capital surrounded by water stays playable.**
+   - If the capital starts (or ends up) with no land road and the throne touches open sea, immigrants, caravans, returning troops, tourists and bandits use a **dock** (a coastal tile of the island). People leaving (emigrants, caravans, hunters, emissaries) walk to the dock and leave from there.
+   - On the world map, if the path graph leaves the capital isolated, the mod links it to the 2 nearest regions (trade, armies, garrisons and bandits work). It only adds a link when it detects isolation. It doesn't regenerate the world map.
+   - A capital in the ocean or on a mountain starts with an irregular island/plateau about 30 tiles in radius, cleared around the landing point (otherwise there'd be nowhere to land). For a sea capital, a 6-tile band along the map edge becomes deep water (shallow water within 2 tiles of land stays). Regular land maps are untouched.
+   - The game's "Capital Closed!" warning still appears if you wall in your own throne: the mod only helps when the capital was founded cut off by the sea. During an invasion the game shows that warning on every map, island or not.
+   - Attempted fix for the known "hunters don't work in an empty ocean capital" problem: while the capital is an island, the game finds a "way out" (the dock).
+   - **Arrival by boat.** On an island capital, arrivals come in the game's fishing boat, standing in it with their own species' look: immigrants, tourists and returning troops set out from the map edge by sea and only appear on land when the boat docks. Merchant caravans come in a boat with their goods and continue on foot after landing. Invaders that spawn at sea, or on land across the sea, are ferried to the docks, land there and march on the throne. Several boats leaving from the same spot set out in rows.
 
-## Como usar
-Nada a configurar. Ative o mod ao **começar uma campanha nova** e funde a capital onde quiser. Para ver a diferença nos mapas, gere um mundo novo.
+## How to use
+Nothing to configure. Enable the mod when **starting a new campaign** and found the capital wherever you like. To see the different maps, generate a new world.
 
-## Aviso importante: só no início da campanha
-Adicione o mod apenas ao iniciar uma campanha. As ligações do grafo do mundo ficam gravadas no save (o jogo sem o mod simplesmente as ignora), mas a capital de ilha passa a depender do mod para imigrar e comerciar. Remover no meio do jogo faz a capital de ilha voltar a "Capital Closed!". O mod grava só um número de versão e um indicador "capital é ilha"; carrega saves sem esses dados sem erro.
+## Important: campaign start only
+Only add the mod when starting a campaign. The world-graph links are saved in the save (the game without the mod simply ignores them), but an island capital depends on the mod for immigration and trade. Removing it mid-game sends an island capital back to "Capital Closed!". The mod saves only a version number and an "island capital" flag, and loads saves without that data without errors.
 
-## Compatibilidade
-- Usa mixins do Polyphon, sem substituir classes do jogo. Ponto por ponto: `WorldCentrePlacablity.terrain`, `world.map.pathing.Gen.generateAll`, `Initer.markArround`, `EntryPoints.update` e `randomReachable(int)`, `SFinderEntry.find/any/anyHas`, `ENTETIES.add`, `Humanoid.update`, `Caravan.init/update/render`, `HalfEnts.renderBelow`.
-- O arquivo `assets/init/config/GenerationSettlement.txt` substitui o bloco `GENERATION` inteiro. Outro mod que também troque esse arquivo vence ou perde conforme a ordem de carga.
-- **Heroes of Syx** (v2.14.2 ou mais novo): carregue este mod **depois** dele.
-- Falhas dentro dos ganchos são capturadas e registradas no log uma vez; o jogo cai para o comportamento normal.
+## Compatibility
+- Uses Polyphon mixins and replaces no game classes. Hooks: `WorldCentrePlacablity.terrain`, `world.map.pathing.Gen.generateAll`, `Initer.markArround`, `EntryPoints.update` and `randomReachable(int)`, `SFinderEntry.find/any/anyHas`, `ENTETIES.add`, `Humanoid.update`, `Caravan.init/update/render`, `HalfEnts.renderBelow`.
+- The file `assets/init/config/GenerationSettlement.txt` replaces the entire `GENERATION` block. Another mod that also replaces this file wins or loses depending on load order.
+- **Heroes of Syx** (v2.14.2 or newer): load this mod **after** it.
+- Failures inside hooks are caught and logged once; the game falls back to normal behavior.
+- Goods bought for an island capital are dropped near the throne, the same as on land when there's no warehouse to take them.
 
-## Não implementado
-- **Viagem de barco não é salva.** Se você salvar com barcos no meio do caminho, ao carregar o passageiro já está no ponto de chegada (ou, no caso de invasor, onde surgiu). A viagem começa no máximo 80 tiles antes da costa para ninguém esperar minutos num mapa grande de mar.
-- **Formas novas (penínsulas, fiordes, cânions, vales).** O gerador de assentamento só expõe intensidades (tamanho de lago, largura de rio, etc.); o mod ajusta esses valores. Penínsulas e fiordes dependem do terreno do mapa-múndi, que o mod não regenera.
-- **Correção para saves antigos.** O vínculo do mapa-múndi roda só na geração do mundo (campanha nova).
-- Mapas maiores: fora do escopo.
+## Not implemented
+- **Boat trips aren't saved.** If you save with boats mid-trip, on load the passenger is already at the landing point (or, for an invader, where it spawned). Trips start at most 80 tiles from the coast so nobody waits minutes on a large sea map.
+- **New landforms (peninsulas, fjords, canyons, valleys).** The settlement generator only exposes intensities (lake size, river width, etc.); the mod tunes those values. Peninsulas and fjords depend on world-map terrain, which the mod doesn't regenerate.
+- **Fix for old saves.** The world-map link runs only during world generation (new campaign).
+- Larger maps: out of scope.
 
-## Limites conhecidos
-- Tropas que voltam usam o mesmo caminho dos imigrantes (cais + barco), mas não foram testadas em jogo isoladamente.
+## Known limits
+- Returning troops use the same path as immigrants (dock + boat), but weren't tested in game on their own.
 
-## Créditos
-Requer o Polyphon (VizardAlpha).
+## Credits
+Requires Polyphon (VizardAlpha).

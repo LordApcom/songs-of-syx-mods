@@ -1,48 +1,46 @@
 # Songs of Syx mods
 
-Cinco mods de código para **Songs of Syx V71 (0.71.44)**, cada um na sua pasta. Todos usam o **Polyphon** (de VizardAlpha) para se encaixar no jogo sem substituir classes, então convivem entre si e com outros mods feitos no Polyphon.
+Five code mods for **Songs of Syx V71 (0.71.44)**, one per folder. All of them use **Polyphon** (by VizardAlpha) to hook into the game without replacing any game classes, so they work alongside each other and alongside other Polyphon mods.
 
-*English: five code mods for Songs of Syx V71 (0.71.44), one per folder. All of them need the Polyphon mod. Each folder has its own README (in Portuguese) with what the mod does, how to use it and its known limits.*
-
-| Mod | O que faz |
+| Mod | What it does |
 | --- | --- |
-| [Workplace Species Filter](WorkplaceSpeciesFilter) | Escolha, prédio por prédio, quais espécies e classes (cidadão / escravo) podem trabalhar nele e quais podem usar o serviço dele. |
-| [Plan Ahead](PlanAhead) | Planeje qualquer prédio antes de pesquisar a tecnologia. Ele fica como plano parado e só pode ser ativado depois da pesquisa. |
-| [Fixing the Syx](FixingTheSyx) | Pacote de qualidade de vida: casas encostadas na rocha, fileira de decorações, pescaria que preenche o rio, estradas através da montanha e pilares de sustentação automáticos. |
-| [Cartographer's Dream](CartographersDream) | Mapas de cidade mais dramáticos e capital em quase qualquer lugar (montanha, lago, oceano, ilhota). Uma capital cercada de água continua jogável: imigrantes, comércio e invasores chegam de barco. |
-| [Species Customs Gate](SpeciesCustomsGate) | Cada portão ganha um filtro de espécie e classe e uma seta de mão única. Inimigos e turistas sempre passam. |
+| [Workplace Species Filter](WorkplaceSpeciesFilter) | Choose, building by building, which species and classes (citizen / slave) may work there and which may use its service. |
+| [Plan Ahead](PlanAhead) | Plan any building before its technology is researched. It sits as a dormant plan and can only be activated once the research is done. |
+| [Fixing the Syx](FixingTheSyx) | Quality-of-life pack: houses against mountain rock, decoration rows, fishery river fill, roads through mountains, and automatic support pillars. |
+| [Cartographer's Dream](CartographersDream) | More dramatic settlement maps and a capital that can be founded almost anywhere (mountain, lake, ocean, islet). A capital surrounded by water stays playable: immigrants, trade and invaders arrive by boat. |
+| [Species Customs Gate](SpeciesCustomsGate) | Each gate gets its own species and class filter plus a one-way arrow. Enemies and tourists always pass. |
 
-## Requisitos
+## Requirements
 - Songs of Syx **V71 (0.71.44)**.
-- O mod **Polyphon** instalado e ativo no launcher, junto com os mods daqui.
-- Para compilar: **JDK 21** (`javac` e `jar` no PATH) e PowerShell.
+- The **Polyphon** mod installed and enabled in the launcher, alongside these mods.
+- To build: **JDK 21** (`javac` and `jar` on the PATH) and PowerShell.
 
-## Como compilar e instalar
-Cada pasta tem um `build.ps1`. Ele precisa saber onde estão o jogo e o `Polyphon.jar` (dentro da pasta `V71\script` do mod Polyphon instalado):
+## Building and installing
+Each folder has a `build.ps1`. It needs to know where the game and `Polyphon.jar` are (the latter is inside the `V71\script` folder of the installed Polyphon mod):
 
 ```powershell
 cd WorkplaceSpeciesFilter
-.\build.ps1 -Polyphon "<caminho>\Polyphon.jar"           # só compila, saída em dist\
-.\build.ps1 -Polyphon "<caminho>\Polyphon.jar" -Deploy   # compila e copia para %APPDATA%\songsofsyx\mods
+.\build.ps1 -Polyphon "<path>\Polyphon.jar"           # build only, output in dist\
+.\build.ps1 -Polyphon "<path>\Polyphon.jar" -Deploy   # build and copy to %APPDATA%\songsofsyx\mods
 ```
 
-- Se o jogo não estiver na pasta padrão da Steam, passe `-Game "<pasta do jogo>"`.
-- Também dá para usar as variáveis de ambiente `SOS_GAME` e `SOS_POLYPHON` em vez dos parâmetros.
-- Depois, ative o Polyphon e os mods no launcher do jogo. Na primeira abertura o Polyphon pode pedir para reiniciar o jogo.
+- If the game isn't in the default Steam folder, pass `-Game "<game folder>"`.
+- You can also set the `SOS_GAME` and `SOS_POLYPHON` environment variables instead of passing parameters.
+- Then enable Polyphon and the mods in the game launcher. On the first launch Polyphon may ask you to restart the game.
 
-## Estrutura de cada mod
+## Mod layout
 ```
 <Mod>/
-  _Info.txt          nome, versão e descrição mostrados no launcher
-  build.ps1          compila e (com -Deploy) instala
-  src/               código Java
-  resources/         META-INF/polyphon.json (lista de ganchos do Polyphon)
-  assets/            dados do jogo que o mod troca (só no Cartographer's Dream)
-  README.md          o que faz, como usar, compatibilidade e limites
+  _Info.txt          name, version and description shown in the launcher
+  build.ps1          builds and (with -Deploy) installs the mod
+  src/               Java source
+  resources/         META-INF/polyphon.json (list of Polyphon hooks)
+  assets/            game data the mod replaces (Cartographer's Dream only)
+  README.md          what it does, how to use it, compatibility and known limits
 ```
 
-## Contribuir
-O repositório é público: qualquer pessoa pode baixar, compilar, fazer um fork e abrir uma issue. Só o dono do repositório envia mudanças e aceita pull requests.
+## Contributing
+This repository is public: anyone can download it, build it, fork it and open an issue. Only the repository owner pushes changes and merges pull requests.
 
-## Licença
+## License
 [MIT](LICENSE).
