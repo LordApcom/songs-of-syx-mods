@@ -1,0 +1,7 @@
+VERSION: "1.3.0",
+GAME_VERSION_MAJOR: 71,
+GAME_VERSION_MINOR: 44,
+NAME: "Workplace Species Filter",
+DESC: "Per-building species and class filters for both workers (who runs the building) and users (who uses its services). Filter bathrooms, temples, canteens, and more by race and citizen/slave status, individually per building.",
+AUTHOR: "LordApcom",
+INFO: "Independent worker and user filters per building. Enemies, rioters, deranged, and prisoners bypass the user filter.",

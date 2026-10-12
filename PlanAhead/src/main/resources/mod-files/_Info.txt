@@ -1,0 +1,5 @@
+VERSION: "1.0.5",
+NAME: "Plan Ahead",
+DESC: "Lets you place any building before researching its tech, but tech-locked placements are forced into Planning Mode and cannot be activated until you actually unlock the technology.",
+AUTHOR: "LordApcom",
+INFO: "Every building shows up in the build menu. Tech-locked entries are still clickable and you can drag out their full footprint, but the resulting construction is auto-placed as a dormant Plan. Once you unlock the matching tech, you can activate the construction normally.",

@@ -1,0 +1,63 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project xmlns="http://maven.apache.org/POM/4.0.0"
+         xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+         xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
+    <modelVersion>4.0.0</modelVersion>
+
+    <groupId>planahead</groupId>
+    <artifactId>PlanAhead</artifactId>
+    <version>1.0.5</version>
+    <packaging>jar</packaging>
+
+    <properties>
+        <maven.compiler.source>21</maven.compiler.source>
+        <maven.compiler.target>21</maven.compiler.target>
+        <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
+        <game.dir>C:/Program Files (x86)/Steam/steamapps/common/Songs of Syx</game.dir>
+        <mod.deploy.dir>${user.home}/AppData/Roaming/songsofsyx/mods/PlanAhead</mod.deploy.dir>
+    </properties>
+
+    <dependencies>
+        <dependency>
+            <groupId>com.songsofsyx</groupId>
+            <artifactId>SongsOfSyx</artifactId>
+            <version>0.71.31</version>
+            <scope>system</scope>
+            <systemPath>${game.dir}/SongsOfSyx.jar</systemPath>
+        </dependency>
+    </dependencies>
+
+    <build>
+        <plugins>
+            <plugin>
+                <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-jar-plugin</artifactId>
+                <version>3.4.1</version>
+                <configuration>
+                    <outputDirectory>${mod.deploy.dir}/V71/script</outputDirectory>
+                    <finalName>PlanAhead</finalName>
+                </configuration>
+            </plugin>
+            <plugin>
+                <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-resources-plugin</artifactId>
+                <version>3.3.1</version>
+                <executions>
+                    <execution>
+                        <id>copy-mod-files</id>
+                        <phase>package</phase>
+                        <goals><goal>copy-resources</goal></goals>
+                        <configuration>
+                            <outputDirectory>${mod.deploy.dir}</outputDirectory>
+                            <resources>
+                                <resource>
+                                    <directory>src/main/resources/mod-files</directory>
+                                </resource>
+                            </resources>
+                        </configuration>
+                    </execution>
+                </executions>
+            </plugin>
+        </plugins>
+    </build>
+</project>
