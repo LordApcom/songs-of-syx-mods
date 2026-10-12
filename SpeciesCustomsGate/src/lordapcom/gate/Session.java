@@ -328,6 +328,8 @@ final class Session {
 		HTYPE t = h.indu().hType();
 		if (h.indu().hostile() || t == HTYPES.TOURIST() || t == HTYPES.SOLDIER())
 			return null;
+		if (STATS.POP().EMMIGRATING.indu().get(h.indu()) != 0)
+			return null; // leaving the city for good: never trap emigrants behind a gate
 		return HGROUP.get(h);
 	}
 
