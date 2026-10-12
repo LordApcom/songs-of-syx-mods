@@ -1,0 +1,1 @@
+{ "requiresEngine": ">=0.2.0", "package": "lordapcom.bridge", "mixins": ["MenuMixin", "WorldGenMixin", "LandingMixin", "ViewMixin"] }

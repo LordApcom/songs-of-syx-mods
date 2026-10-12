@@ -1,0 +1,7 @@
+VERSION: "1.0.0",
+GAME_VERSION_MAJOR: 71,
+GAME_VERSION_MINOR: 44,
+NAME: "SoS Test Bridge",
+DESC: "Developer tool for testing mods with scripts or AI agents: drive and inspect a running game through local files, no mouse or keyboard. OFF until you create %APPDATA%/songsofsyx/bridge/ENABLED.",
+AUTHOR: "LordApcom",
+INFO: "Developer tool, not a gameplay mod: when enabled it can spawn people, money and buildings. Use a test save. Requires Polyphon. Game V71.44",

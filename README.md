@@ -1,6 +1,6 @@
 # Songs of Syx mods
 
-Five code mods for **Songs of Syx V71 (0.71.44)**, one per folder. All of them use **Polyphon** (by VizardAlpha) to hook into the game without replacing any game classes, so they work alongside each other and alongside other Polyphon mods.
+Five code mods for **Songs of Syx V71 (0.71.44)**, one per folder, plus a developer tool for testing mods with scripts or AI agents. All of them use **Polyphon** (by VizardAlpha) to hook into the game without replacing any game classes, so they work alongside each other and alongside other Polyphon mods.
 
 | Mod | What it does |
 | --- | --- |
@@ -9,6 +9,12 @@ Five code mods for **Songs of Syx V71 (0.71.44)**, one per folder. All of them u
 | [Fixing the Syx](FixingTheSyx) | Quality-of-life pack: houses against mountain rock, decoration rows, fishery river fill, roads through mountains, and automatic support pillars. |
 | [Cartographer's Dream](CartographersDream) | More dramatic settlement maps and a capital that can be founded almost anywhere (mountain, lake, ocean, islet). A capital surrounded by water stays playable: immigrants, trade and invaders arrive by boat. |
 | [Species Customs Gate](SpeciesCustomsGate) | Each gate gets its own species and class filter plus a one-way arrow. Enemies and tourists always pass. |
+
+**Developer tool**
+
+| Tool | What it does |
+| --- | --- |
+| [SoS Test Bridge](SosTestBridge) | Lets a script or an AI coding agent drive and inspect a running game through local files, with no mouse, keyboard or screen. Off until you opt in. Not a gameplay mod. |
 
 ## Requirements
 - Songs of Syx **V71 (0.71.44)**.
