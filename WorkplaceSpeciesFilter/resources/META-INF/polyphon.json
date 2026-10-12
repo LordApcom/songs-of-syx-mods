@@ -1,0 +1,5 @@
+{
+  "requiresEngine": ">=0.2.0",
+  "package": "lordapcom.wsf",
+  "mixins": ["WorkSetMixin", "RaceGroupMixin", "PrioMixin", "EmployerSimpleMixin", "PlanMixin", "FinderMixin", "ToolsMenuMixin"]
+}

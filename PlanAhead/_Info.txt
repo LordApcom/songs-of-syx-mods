@@ -1,0 +1,7 @@
+VERSION: "1.0.0",
+GAME_VERSION_MAJOR: 71,
+GAME_VERSION_MINOR: 44,
+NAME: "Plan Ahead",
+DESC: "Plan any building before its technology is researched. Locked buildings are placed in Planning Mode and can only be activated once unlocked.",
+AUTHOR: "LordApcom",
+INFO: "Requires Polyphon. Game V71.44",

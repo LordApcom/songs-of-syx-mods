@@ -1,0 +1,7 @@
+VERSION: "1.0.0",
+GAME_VERSION_MAJOR: 71,
+GAME_VERSION_MINOR: 44,
+NAME: "Fixing the Syx",
+DESC: "Quality-of-life pack: houses on mountain rock, decoration rows, fishery river fill, roads through mountains, support pillar autofill.",
+AUTHOR: "LordApcom",
+INFO: "Requires Polyphon. Game V71.44",

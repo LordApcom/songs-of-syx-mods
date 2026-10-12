@@ -1,0 +1,7 @@
+VERSION: "1.0.0",
+GAME_VERSION_MAJOR: 71,
+GAME_VERSION_MINOR: 44,
+NAME: "Cartographer's Dream",
+DESC: "More dramatic settlement maps, and a capital that can be founded almost anywhere (mountain, lake, ocean, islet, river). A sea-locked capital stays playable.",
+AUTHOR: "LordApcom",
+INFO: "Requires Polyphon. Add at campaign start only. Load after Heroes of Syx. Game V71.44",

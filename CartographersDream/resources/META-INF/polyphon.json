@@ -1,0 +1,15 @@
+{
+  "requiresEngine": ">=0.2.0",
+  "package": "lordapcom.cdream",
+  "mixins": [
+    "CapitalPlacementMixin",
+    "PathGraphMixin",
+    "ThroneCarveMixin",
+    "EntryPointsMixin",
+    "EntryFinderMixin",
+    "BoatEntitiesMixin",
+    "BoatHumanoidMixin",
+    "BoatCaravanMixin",
+    "BoatRenderMixin"
+  ]
+}

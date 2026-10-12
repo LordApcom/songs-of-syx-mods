@@ -1,5 +1,0 @@
-VERSION: "1.3.2",
-NAME: "Fixing the Syx",
-DESC: "QoL building tweaks. See Workshop page for details.",
-AUTHOR: "LordApcom",
-INFO: "Houses on mountain rock (auto-tunneled). Decoration series: Ctrl+Alt+Wheel for count, Ctrl+Shift+Wheel for spacing, R to rotate direction. Fishery: Ctrl+Click on shallow water. Roads through mountain (click or drag, T toggles ON/OFF). Pillars: Ctrl+Click on a yellow tile of an indoor room.",

@@ -1,0 +1,7 @@
+VERSION: "1.0.0",
+GAME_VERSION_MAJOR: 71,
+GAME_VERSION_MINOR: 44,
+NAME: "Workplace Species Filter",
+DESC: "Per-building hard filters: which species/classes may work in a workplace and which may use a service.",
+AUTHOR: "LordApcom",
+INFO: "Requires Polyphon. Game V71.44",

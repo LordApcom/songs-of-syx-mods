@@ -1,0 +1,12 @@
+{
+  "requiresEngine": ">=0.2.0",
+  "package": "lordapcom.fts",
+  "mixins": [
+    "HouseMountainMixin",
+    "ToolMixin",
+    "DecoRowMixin",
+    "MultiToolMixin",
+    "RoadProblemMixin",
+    "RoadPlaceMixin"
+  ]
+}
