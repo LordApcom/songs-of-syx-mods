@@ -366,8 +366,21 @@ final class ModEconomy {
 						"employed", e.employed(), "needed", e.neededWorkers()));
 			return l;
 		}
+		// game path: view/sett/ui/room/priority/UIRoomRaceAssign.java (employees().prefferedSet)
+		if (a[1].equals("prefer") && a.length >= 6) {
+			RoomInstance ins = (RoomInstance) SETT.ROOMS().map.instance.get(Commands.i(a, 2), Commands.i(a, 3));
+			init.type.WGROUP.HTypeBitsImp t = new init.type.WGROUP.HTypeBitsImp(false);
+			List<String> set = new ArrayList<>();
+			for (init.type.WGROUP g : Lists.of(init.type.WGROUP.all()))
+				if (g.race.key.equalsIgnoreCase(a[4]) && g.type.CLASS.key.equalsIgnoreCase(a[5])) {
+					t.set(g);
+					set.add(g.race.key + "/" + g.type.key);
+				}
+			ins.employees().prefferedSet(t);
+			return Commands.m("room", ins.blueprint().key, "preferred", set);
+		}
 		if (a.length < 4)
-			throw new IllegalArgumentException("work list | work prio <roomKey> <0-30> | work target <roomKey> <n|max>");
+			throw new IllegalArgumentException("work list | work prio <roomKey> <0-30> | work target <roomKey> <n|max> | work prefer <x> <y> <bits>");
 		RoomEmployment emp = null;
 		for (RoomEmployment e : Lists.of(SETT.ROOMS().employment.ALL()))
 			if (e.blueprint().key().equalsIgnoreCase(a[2]))

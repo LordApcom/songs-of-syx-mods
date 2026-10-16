@@ -197,7 +197,7 @@ final class Build {
 			RoomInstance ri = (RoomInstance) r;
 			try {
 				RoomEmploymentIns e = ri.employees(); // RoomInstance.java:342
-				m.put("employment", m("employed", e.employed(), "target", e.target(), "max", e.max(), "needed", e.needed()));
+				m.put("employment", m("employed", e.employed(), "target", e.target(), "max", e.max(), "needed", e.needed(), "workload", e.efficiency()));
 			} catch (Throwable t) {
 				m.put("employment", null);
 			}
