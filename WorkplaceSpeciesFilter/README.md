@@ -32,7 +32,7 @@ When you restrict a building's workers, anyone already working there who isn't a
 - Service: `AIModules.getNextPlan` marks who is choosing the plan; `SFinderRoomService.getReservable` hides service tiles of rooms that exclude that person.
 
 ## Known limits
-- Swapping jobs between two workers can leave a room 1 person over target for a moment if one side is refused; the game corrects it on its own.
+- Workers don't swap between buildings of a type that has a worker filter. The game swaps two workers in two steps, and when the filter refused one step only half the swap happened, which drained the filtered building.
 - Anyone already on their way to the service when the users filter changes finishes the trip.
 
 ## Not implemented

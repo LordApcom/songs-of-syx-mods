@@ -266,18 +266,12 @@ final class Filters {
 	 */
 	private static int[] place(RoomEmployment e, Object bucket) throws Exception {
 		RoomBlueprintIns<?> b = e.blueprint();
-		int m = 0;
-		boolean filtered = false;
-		for (int i = 0; i < b.instancesSize(); i++) {
-			RoomInstance ins = b.getInstance(i);
-			if (ins.active()) {
-				m++;
-				Entry en = MAP.get(ins);
-				filtered |= en != null && en.w != null;
-			}
-		}
-		if (!filtered)
+		if (!typeFiltered(b))
 			return null;
+		int m = 0;
+		for (int i = 0; i < b.instancesSize(); i++)
+			if (b.getInstance(i).active())
+				m++;
 		int n = WGROUP.all().size();
 		int[] seats = new int[m];
 		boolean[][] ok = new boolean[n][m];
@@ -320,6 +314,21 @@ final class Filters {
 				if (ok[gi][i])
 					r[n + gi] += seats[i];
 		return r;
+	}
+
+	/** True when an active building of this workplace type has a worker filter. */
+	static boolean typeFiltered(RoomInstance ins) {
+		return typeFiltered(ins.blueprintI());
+	}
+
+	private static boolean typeFiltered(RoomBlueprintIns<?> b) {
+		for (int i = 0; i < b.instancesSize(); i++) {
+			RoomInstance ins = b.getInstance(i);
+			Entry en = MAP.get(ins);
+			if (ins.active() && en != null && en.w != null)
+				return true;
+		}
+		return false;
 	}
 
 	private static int held(Object workers, WGROUP g) throws Exception {
