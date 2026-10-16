@@ -78,7 +78,9 @@ final class DecoRow {
 		PlacableFixed p = deco(orig);
 		if (p == null || !VIEW.s().tools.isHovered())
 			return;
-		if (KEYS.MAIN().ROTATE.consumeClick())
+		// peek, don't consume: vanilla reads the same click right after us to rotate the item itself
+		boolean rotate = Shadow.get(KEYS.MAIN().ROTATE, "pressed");
+		if (rotate)
 			dir = (dir + 1) & 3;
 		float w = MButt.peekWheel();
 		if (w == 0)

@@ -13,7 +13,7 @@ See the installation section in the repository's main README.
 2. **Decoration rows** (Decorations category only, single-item tool):
    - Ctrl+Alt+wheel: count (1 to 64).
    - Ctrl+Shift+wheel: spacing in tiles, center to center.
-   - R: rotates the direction (east, south, west, north), with the mouse over the map.
+   - R: rotates the item, as in the base game, and turns the row with it (east, south, west, north), with the mouse over the map.
    - Click: places the row. Translucent ghosts preview the copies, and "Row xN, step S" appears in the info box.
    - Default spacing: monument family (torches, etc.) = 2 x radius - 1; other decorations = item width.
 3. **Fishery river fill.** With the fishery tool, Ctrl+click a shallow-water tile to fill the connected water, nearest first, respecting the room's maximum size and dimensions (counting what's already painted) and skipping tiles owned by other rooms. You still confirm the room and place the items.
@@ -28,7 +28,7 @@ See the installation section in the repository's main README.
 - Roads: the "dig, then road" list lives only in memory. If you reload the save before digging finishes, the tunnel keeps going but the road has to be placed again.
 - Roads: with T on, every rock tile in the selection shows green, not just the tile under the cursor; there's no "anti" icon.
 - Decoration rows: the radius used is the monument's base radius for the item size (the game code doesn't vary radius by upgrade level). Non-monument decorations use the item width.
-- Rows: R rotates the row, not the item. Copies that don't fit are skipped and the rest are placed.
+- Rows: copies that don't fit are skipped and the rest are placed.
 - Pillars: the grid center is the middle of the bounding box, so in even-width rooms symmetry is off by half a tile. Clusters touching items already placed are skipped.
 - Fishery: on very long rivers, only the stretch nearest the click (up to the room limit) is filled.
 
