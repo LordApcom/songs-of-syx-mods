@@ -48,6 +48,15 @@ final class FilterTool extends PlacableMulti {
 	private final boolean[][] sel = new boolean[2][HGROUP.all().size()]; // [0] workers, [1] users
 	private final LIST<CLICKABLE> butts;
 
+	private static FilterTool shared;
+
+	/** One tool for both entry points (Tools menu and rooms panel), so the picked selection is the same in both. */
+	static FilterTool shared() {
+		if (shared == null)
+			shared = new FilterTool();
+		return shared;
+	}
+
 	FilterTool() {
 		super(TITLE, DESC, SPRITES.icons().m.citizen);
 		Arrays.fill(sel[0], true);

@@ -19,6 +19,7 @@ Stores nothing important in the save (just a version integer). You can remove th
 
 ## Compatibility
 Uses Polyphon mixins (no game classes replaced). Hooks: `Lockable.passes`, `CONSTRUCTION.pcreate`, `ConstructionInstance.jobToggle`, `StateManager.activate`.
+- **Better Blueprints** (Nerond): its area-blueprint list no longer warns that locked rooms "will be skipped".
 
 ## Not implemented
 - Roads, walls/structures and fortifications behind technology: these aren't rooms but "jobs", with locks checked in many places (each job type, `getPlacable`, lock texts). There's no single clean point to unlock them and still block activation later.

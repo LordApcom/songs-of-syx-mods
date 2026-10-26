@@ -11,7 +11,9 @@ Two independent filters per building, each with toggles by **species** and by **
 It's a **hard block**: a species/class that isn't allowed is never hired at that building and never uses that service (the service disappears from its searches). The game's native soft preference (work groups in the priority panel) keeps working alongside the filter.
 
 ## How to use
-1. In the bottom bar, click the **Tools** button (gear). The mod adds a **Species filter** entry as another cell in the tools grid (after the last tool), in the same style as the others.
+1. Open the tool from either place:
+   - the bottom bar's **Tools** button (gear): the mod adds a **Species filter** entry as another cell in the tools grid (after the last tool), in the same style as the others;
+   - the **workforce & rooms** panel (top bar): a small citizen button right of **Priority**.
 2. Clicking it opens the **Species filter** tool. The orange/blue header at the top shows the current mode: **SETTING: WORKERS** (who may work) or **SETTING: USERS** (who may use the service). Switch with the Workers / Users buttons; each mode keeps its own selection.
 3. Check the **allowed** species/classes (checked buttons = allowed; shortcuts: everyone, all citizens, all slaves, nobody).
 4. Click or drag over buildings. A selection with everything checked removes the filter.
@@ -23,7 +25,7 @@ When you restrict a building's workers, anyone already working there who isn't a
 - Saved with the save. Old saves or saves without the mod have no data: no filter (everyone allowed).
 - The filter is tied to the building instance; demolishing the building removes the filter. It doesn't survive rebuilding.
 - The mod is always on (it doesn't appear in the new-game script list). Removing it from a save that used it triggers the game's normal missing-script warning.
-- Requires **Polyphon** (VizardAlpha). Replaces no game classes; it only injects at the points listed below. May conflict with mods that change hiring (`StatsWork`/`RoomEmployments`) or service search (`SFinderRoomService`, `AIModules`).
+- Requires **Polyphon** (VizardAlpha). If Polyphon isn't active (not enabled, or installed but the game wasn't restarted after its first-run setup), none of the mod's hooks load and the Species filter entry doesn't appear; the mod then sends an in-game message saying so each time a game starts or loads. Replaces no game classes; it only injects at the points listed below. May conflict with mods that change hiring (`StatsWork`/`RoomEmployments`) or service search (`SFinderRoomService`, `AIModules`). Extra hook for the rooms-panel button: `UIRooms.main`.
 - Optional integration with the Species Customs Gate mod: if the class `lordapcom.gate.GateApi` exists (checked once via reflection), a worker assignment is refused when `GateApi.canReach(humanoid, x, y)` returns false. Without that mod, nothing happens.
 
 ## How it works (summary)
@@ -36,7 +38,7 @@ When you restrict a building's workers, anyone already working there who isn't a
 - Anyone already on their way to the service when the users filter changes finishes the trip.
 
 ## Not implemented
-- Nothing from the concept was left out. The entry lives in the bottom bar's Tools menu (no dedicated hotkey or tool search).
+- Nothing from the concept was left out. No dedicated hotkey, and the entry isn't in the tool search (Ctrl+F).
 
 ## Credits
 Requires Polyphon (VizardAlpha).

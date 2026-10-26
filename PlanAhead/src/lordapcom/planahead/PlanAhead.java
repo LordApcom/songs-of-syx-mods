@@ -24,6 +24,10 @@ public final class PlanAhead {
 		"settlement.room.main.copy.Copier",           // Copier + CopierMass (copy/paste of rooms)
 		"settlement.room.main.copy.BSwap",            // copy tool: keep the planned building type
 		"view.sett.ToolDefault",                      // MOD+click on a room to build another
+		// Better Blueprints (workshop 3699453096): the area-blueprint list's "will be skipped" warning. Its placing code
+		// (BBSavedAreaPlacer) is already covered by view.sett.ui.room.prints. Its in-place type swap (view.ui.BB*) is
+		// left out on purpose: it would turn a built room into a locked type with no planning step.
+		"settlement.room.main.copy.BBAreaBlueprintAvailability",
 	};
 
 	private static final StackWalker WALKER = StackWalker.getInstance();

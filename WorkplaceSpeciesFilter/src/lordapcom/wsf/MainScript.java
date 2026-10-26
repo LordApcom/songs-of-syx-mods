@@ -11,6 +11,7 @@ import settlement.room.main.Room;
 import settlement.room.main.RoomInstance;
 import snake2d.util.file.FileGetter;
 import snake2d.util.file.FilePutter;
+import view.ui.message.MessageText;
 
 public final class MainScript implements SCRIPT {
 
@@ -52,10 +53,16 @@ public final class MainScript implements SCRIPT {
 
 		private ArrayList<Pending> pending;
 		private int tick;
+		private boolean warned; // checked once per game started or loaded
 
 		@Override
 		public void update(double ds) {
 			try {
+				if (!warned) {
+					warned = true;
+					if (!polyphonActive())
+						warnNoPolyphon();
+				}
 				if (pending != null) {
 					resolve();
 					pending = null;
@@ -65,6 +72,23 @@ public final class MainScript implements SCRIPT {
 			} catch (Throwable t) {
 				Filters.err("update", t);
 			}
+		}
+
+		// Without Polyphon's agent no hook of this mod runs: no Tools menu entry, no filtering. Players reported "can't find
+		// the filter" (Steam, 2026-10-21..26); this is the one case where the entry is missing, so say it in the game.
+		private static boolean polyphonActive() {
+			try {
+				return vizardalpha.polyphon.api.Polyphon.isActive();
+			} catch (Throwable t) {
+				return false; // Polyphon not installed or not enabled
+			}
+		}
+
+		private static void warnNoPolyphon() {
+			snake2d.LOG.err("[WSF] Polyphon is not active: the mod's hooks did not load (no Tools menu entry, no filtering)");
+			new MessageText("Workplace Species Filter is not running",
+				"Polyphon is not active, so this mod can't add its Species filter tool. Make sure Polyphon is enabled in the launcher, then close and start the game again: the first time Polyphon runs it sets itself up and needs one restart.")
+				.send();
 		}
 
 		// Rooms are rebuilt on load, so entries are re-attached by room index and position once the game runs.

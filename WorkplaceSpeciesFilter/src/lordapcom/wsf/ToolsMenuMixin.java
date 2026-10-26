@@ -36,7 +36,7 @@ public final class ToolsMenuMixin {
 			RENDEROBJ last = s.elements().get(s.elements().size() - 1);
 			int cellW = 350, cellH = 44; // BButt.WIDTH / HEIGHT (BButt.java:10-11); grid column pitch = 700/2 (Options.java:47-48)
 
-			FilterTool tool = new FilterTool();
+			FilterTool tool = FilterTool.shared();
 			// Same construction as BButt (BButt.java:15-20), which is package-private.
 			GButt.ButtPanel b = new GButt.ButtPanel((SPRITE) new Text(UI.FONT().H2, "Species filter").setMaxWidth(cellW - 50).setMultipleLines(false)) {
 				@Override
