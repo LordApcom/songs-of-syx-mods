@@ -22,7 +22,10 @@ public final class ThroneCarveMixin {
 
 	private static final int PROBE = 8;
 	private static final int RADIUS = 30;
-	/** Mountain start with no ground: a pocket for the throne and the first stockpile, not a plateau. */
+	/**
+	 * Mountain start with no ground: a pocket for the throne and the first stockpile, not a plateau. Never narrower than
+	 * this, so the 9x12 landing party (PlacerLanding) fits; the irregular edge reaches about 12.
+	 */
 	private static final int POCKET = 9;
 	/** Open tiles connected to the throne (within RADIUS) that count as "room to land": about a 9-tile radius. */
 	private static final int MIN_OPEN = 250;
@@ -57,7 +60,8 @@ public final class ThroneCarveMixin {
 					if (!blocked(x, y))
 						continue;
 					double ang = Math.atan2(y - ty, x - tx);
-					double r = radius * (0.8 + 0.2 * Math.sin(3 * ang + p1) + 0.1 * Math.sin(7 * ang + p2));
+					double shape = 0.8 + 0.2 * Math.sin(3 * ang + p1) + 0.1 * Math.sin(7 * ang + p2);
+					double r = sea ? RADIUS * shape : Math.max(POCKET, POCKET * 1.3 * shape);
 					double d = Math.hypot(x - tx, y - ty);
 					if (d < r)
 						TERRAIN().NADA.placeFixed(x, y);
