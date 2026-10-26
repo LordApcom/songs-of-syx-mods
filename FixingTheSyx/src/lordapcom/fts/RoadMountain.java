@@ -49,9 +49,12 @@ final class RoadMountain {
 		pending.add(new Pending(tx, ty, road));
 	}
 
-	/** T key, only while a road placer is the active tool. */
+	/**
+	 * T key, only while a road placer is the active tool. Plain T only: Ctrl/Shift/Alt+T belong to the game's
+	 * and other mods' hotkeys and must not flip the toggle.
+	 */
 	static void keys(Object toolPlacer) {
-		boolean t = Keys.down(KEYCODES.KEY_T);
+		boolean t = Keys.down(KEYCODES.KEY_T) && !Keys.ctrl() && !Keys.shift() && !Keys.alt();
 		if (t && !tWas && isRoadTool((ToolPlacer) toolPlacer))
 			on = !on;
 		tWas = t;

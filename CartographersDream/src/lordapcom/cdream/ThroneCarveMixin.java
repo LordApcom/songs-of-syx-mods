@@ -2,6 +2,8 @@ package lordapcom.cdream;
 
 import static settlement.main.SETT.TERRAIN;
 
+import java.util.ArrayDeque;
+
 import settlement.main.SETT;
 import snake2d.util.rnd.RND;
 import vizardalpha.polyphon.api.At;
@@ -11,12 +13,19 @@ import vizardalpha.polyphon.api.Mixin;
 /**
  * A capital founded on open water or mountain would start with nowhere to land. Right after the settlement map is
  * generated, this clears an irregular patch (islet or plateau) around the start spot. Normal land starts are untouched.
+ * A mountain start that already has room to land (a valley or ledge) keeps every rock tile: players found mountain
+ * capitals on purpose, so the plateau is only a small pocket and only when there is no ground at all. Sea starts
+ * still get the full islet.
  */
 @Mixin(target = "settlement.room.main.throne.Initer")
 public final class ThroneCarveMixin {
 
 	private static final int PROBE = 8;
 	private static final int RADIUS = 30;
+	/** Mountain start with no ground: a pocket for the throne and the first stockpile, not a plateau. */
+	private static final int POCKET = 9;
+	/** Open tiles connected to the throne (within RADIUS) that count as "room to land": about a 9-tile radius. */
+	private static final int MIN_OPEN = 250;
 	private static final int BORDER = 6;
 	private static final int COAST = 2;
 
@@ -36,16 +45,19 @@ public final class ThroneCarveMixin {
 					}
 			if (blocked * 10 < total * 6)
 				return;
+			boolean sea = water * 2 > blocked; // islet in the sea, not a plateau in a mountain
+			if (!sea && openAround(tx, ty) >= MIN_OPEN)
+				return; // a valley or ledge in the mountains: already somewhere to land, keep the rock
 
 			double p1 = RND.rFloat() * Math.PI * 2, p2 = RND.rFloat() * Math.PI * 2;
-			int ext = RADIUS + COAST + 2;
-			boolean sea = water * 2 > blocked; // islet in the sea, not a plateau in a mountain
+			int radius = sea ? RADIUS : POCKET;
+			int ext = radius + COAST + 2;
 			for (int y = ty - ext; y <= ty + ext; y++)
 				for (int x = tx - ext; x <= tx + ext; x++) {
 					if (!blocked(x, y))
 						continue;
 					double ang = Math.atan2(y - ty, x - tx);
-					double r = RADIUS * (0.8 + 0.2 * Math.sin(3 * ang + p1) + 0.1 * Math.sin(7 * ang + p2));
+					double r = radius * (0.8 + 0.2 * Math.sin(3 * ang + p1) + 0.1 * Math.sin(7 * ang + p2));
 					double d = Math.hypot(x - tx, y - ty);
 					if (d < r)
 						TERRAIN().NADA.placeFixed(x, y);
@@ -81,6 +93,32 @@ public final class ThroneCarveMixin {
 						&& !TERRAIN().WATER.SHALLOW.is(x + dx, y + dy))
 					return true;
 		return false;
+	}
+
+	/** Open (not water, not rock) tiles 4-connected to the start, counted within RADIUS; stops at MIN_OPEN. */
+	private static int openAround(int tx, int ty) {
+		if (!SETT.IN_BOUNDS(tx, ty) || blocked(tx, ty))
+			return 0;
+		int n = 2 * RADIUS + 1;
+		boolean[] seen = new boolean[n * n];
+		ArrayDeque<int[]> q = new ArrayDeque<>();
+		q.add(new int[] { tx, ty });
+		seen[RADIUS * n + RADIUS] = true;
+		int count = 0;
+		while (!q.isEmpty() && count < MIN_OPEN) {
+			int[] c = q.poll();
+			count++;
+			for (int i = 0; i < 4; i++) {
+				int x = c[0] + (i == 0 ? 1 : i == 1 ? -1 : 0), y = c[1] + (i == 2 ? 1 : i == 3 ? -1 : 0);
+				int gx = x - tx + RADIUS, gy = y - ty + RADIUS;
+				if (gx < 0 || gy < 0 || gx >= n || gy >= n || seen[gy * n + gx])
+					continue;
+				seen[gy * n + gx] = true;
+				if (SETT.IN_BOUNDS(x, y) && !blocked(x, y))
+					q.add(new int[] { x, y });
+			}
+		}
+		return count;
 	}
 
 	private static boolean blocked(int x, int y) {
