@@ -148,11 +148,20 @@ final class Flow {
 		case "capital": {
 			// The capital tool's own PlacableFixed (StageCapitol.java:88-107), clicked like PlacableFixedTool.click
 			if (a.length < 3 || (a.length < 4 && !MODES.contains(a[2])))
-				throw new IllegalArgumentException("wg capital <cx> <cy> | wg capital auto");
+				throw new IllegalArgumentException("wg capital <cx> <cy> | wg capital auto | wg capital rock <pct>");
 			PlacableFixed p = placer(g);
 			if (p == null || !stage(g).equals("capital"))
 				throw new IllegalStateException("capital placer not active (stage=" + stage(g) + ")");
 			int cx, cy;
+			if ((a[2].equals("rock") || a[2].equals("rockthrone")) && a.length > 3) {
+				int[] c = rockCapital(p, Double.parseDouble(a[3]) / 100, a[2].equals("rockthrone"));
+				CharSequence e = Build.placeItem(p, c[0] - p.width() / 2, c[1] - p.height() / 2);
+				if (e != null)
+					return Commands.m("placed", false, "error", e.toString());
+				return Commands.m("placed", true, "capital", Commands.m("x", WORLD.GEN().playerX, "y", WORLD.GEN().playerY),
+					"rockPct", Math.round(rock(c[0], c[1]) * 1000) / 10.0, "throneTileRockPct", Math.round(throneRock(c[0], c[1]) * 1000) / 10.0,
+					"stage", stage(g));
+			}
 			if (MODES.contains(a[2])) {
 				// first spot, scanning from the world centre outwards, that the tool itself accepts;
 				// "land" also requires the vanilla rule (no Cartographer relaxation) so the capital sits on normal ground
@@ -183,7 +192,7 @@ final class Flow {
 			return Commands.m("finished", true, "next", "wait for screen=landing, then: landing <x> <y> | landing auto");
 		}
 		default:
-			throw new IllegalArgumentException("wg info [cx cy] | races | race [key] | terrain [seed] | capital <cx> <cy>|auto|land|mountain|deepmountain|sea | finish");
+			throw new IllegalArgumentException("wg info [cx cy] | races | race [key] | terrain [seed] | capital <cx> <cy>|auto|land|mountain|deepmountain|deepmountain8|sea|rock <pct>|rockthrone <pct> | finish");
 		}
 	}
 
@@ -208,7 +217,7 @@ final class Flow {
 		return landAt(p, Integer.parseInt(a[1]), Integer.parseInt(a[2]));
 	}
 
-	private static CharSequence check(PlacableFixed p, int cx, int cy) {
+	static CharSequence check(PlacableFixed p, int cx, int cy) {
 		p.init(cx, cy);
 		int x1 = cx - p.width() / 2, y1 = cy - p.height() / 2;
 		if (x1 < 1 || y1 < 1 || x1 + p.width() >= SETT.TWIDTH - 1 || y1 + p.height() >= SETT.THEIGHT - 1)
@@ -248,6 +257,9 @@ final class Flow {
 					// deepmountain: centre and 7+ of the 9 tiles are mountain; sea: all 9 tiles are ocean
 					if (mode.equals("deepmountain") && (!WORLD.MOUNTAIN().is(cx, cy) || count(cx, cy, true) < 7))
 						continue;
+					// deepmountain8: the most rock Cartographer's Dream allows (8 of 9, centre included)
+					if (mode.equals("deepmountain8") && (!WORLD.MOUNTAIN().is(cx, cy) || count(cx, cy, true) < 8))
+						continue;
 					if (mode.equals("sea") && count(cx, cy, false) < 9)
 						continue;
 					return new int[] { cx, cy };
@@ -255,7 +267,57 @@ final class Flow {
 		throw new IllegalStateException("no valid capital spot");
 	}
 
-	private static final java.util.List<String> MODES = java.util.List.of("auto", "land", "mountain", "deepmountain", "sea");
+	/** Spot the capital tool accepts whose 3x3 world tiles have a mountain share (per sub-tile, as GeneratorMountain reads it) closest to want. */
+	private static int[] rockCapital(PlacableFixed p, double want, boolean atThrone) {
+		int w = WORLD.TWIDTH(), h = WORLD.THEIGHT(), bx = -1, by = -1;
+		double best = Double.MAX_VALUE;
+		for (int cy = 2; cy < h - 2; cy++)
+			for (int cx = 2; cx < w - 2; cx++) {
+				double d = Math.abs((atThrone ? throneRock(cx, cy) : rock(cx, cy)) - want);
+				if (d < best - 1e-9 && p.placableWhole(cx - p.width() / 2, cy - p.height() / 2) == null) {
+					best = d;
+					bx = cx;
+					by = cy;
+				}
+			}
+		if (bx < 0)
+			throw new IllegalStateException("no valid capital spot");
+		return new int[] { bx, by };
+	}
+
+	/**
+	 * Mountain share (9 sub-tiles) of the world tile the throne will stand on: settlement/main/CapitolArea.java:75-93 picks the
+	 * first edge tile of the 3x3 that is good land, else the middle one; SETT.java:362 puts the throne at its centre.
+	 */
+	private static double throneRock(int cx, int cy) {
+		int x1 = cx - 1, y1 = cy - 1, ax = cx, ay = cy;
+		search:
+		for (int y = 0; y < 3; y++)
+			for (int x = 0; x < 3; x++)
+				if (world.map.road.WTRAV.isGoodLandTile(x1 + x, y1 + y) && (x == 0 || y == 0 || x == 2 || y == 2)) {
+					ax = x1 + x;
+					ay = y1 + y;
+					break search;
+				}
+		int n = 0;
+		for (snake2d.util.datatypes.DIR dir : Lists.of(snake2d.util.datatypes.DIR.ALLC))
+			if (WORLD.MOUNTAIN().area.is(ax, ay, dir))
+				n++;
+		return n / 9.0;
+	}
+
+	/** Share of the 81 mountain sub-tiles (9 world tiles x 9 directions) of the 3x3 area around cx,cy. */
+	private static double rock(int cx, int cy) {
+		int d = WCentre.TILE_DIM / 2, n = 0;
+		for (int y = cy - d; y <= cy + d; y++)
+			for (int x = cx - d; x <= cx + d; x++)
+				for (snake2d.util.datatypes.DIR dir : Lists.of(snake2d.util.datatypes.DIR.ALLC))
+					if (WORLD.MOUNTAIN().area.is(x, y, dir))
+						n++;
+		return n / 81.0;
+	}
+
+	private static final java.util.List<String> MODES = java.util.List.of("auto", "land", "mountain", "deepmountain", "deepmountain8", "sea");
 
 	private static int count(int cx, int cy, boolean mountain) {
 		int d = WCentre.TILE_DIM / 2, n = 0;

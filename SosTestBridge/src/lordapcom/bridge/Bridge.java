@@ -216,7 +216,9 @@ final class Bridge {
 			else if (!screen.equals("settlement") || c.equals("quit") || c.equals("newgame") || c.equals("continue"))
 				res = Flow.exec(screen, args);
 			if (res == null) {
-				if (!screen.equals("settlement") && !c.equals("ping") && !c.equals("eval"))
+				// read-only map commands also work on the landing screen, where the map already exists
+				boolean mapRead = screen.equals("landing") && (c.equals("resmap") || c.equals("ascii") || c.equals("tile"));
+				if (!screen.equals("settlement") && !c.equals("ping") && !c.equals("eval") && !mapRead)
 					throw new IllegalStateException("'" + c + "' needs a settlement; screen is " + screen);
 				res = Commands.exec(args);
 			}

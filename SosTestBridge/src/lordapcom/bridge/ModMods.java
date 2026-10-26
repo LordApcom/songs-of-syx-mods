@@ -17,6 +17,7 @@ final class ModMods {
 
 	static void register() {
 		Registry.add("gate", "gate list | gate set <x> <y> <bits|all|none> [inv] - Species Customs Gate filters (same as the gate panel's Apply)", ModMods::gate);
+		Registry.add("bbcheck", "bbcheck <x> <y> <lockedRoomKey> - Better Blueprints (other author) + Plan Ahead: an in-memory area blueprint holding the room at x,y re-pointed to the locked room type, run through BB's own availability check (the list's 'will be skipped' warning); nothing is saved", ModMods::bbcheck);
 		Registry.add("wsf", "wsf tool | wsf probe <x> <y> | wsf <x> <y> | wsf set <x> <y> <work|use> <bits|all> - Workplace Species Filter per building (same as the filter tool)", ModMods::wsf);
 		Registry.add("cdstate", "cdstate - Cartographer: Capital Closed inputs, island/docks, boats, invaders (count, in water, avg distance to throne, doing)", ModMods::cdstate);
 		Registry.add("cdregroup", "cdregroup <humanId> - Cartographer: run the landing regroup for this soldier's division at its tile and report the formation before/after", ModMods::cdregroup);
@@ -272,6 +273,43 @@ final class ModMods {
 		int[] b = Shadow.get(g, "bits");
 		return Commands.m("x1", Shadow.get(g, "x1"), "y1", Shadow.get(g, "y1"), "x2", Shadow.get(g, "x2"), "y2", Shadow.get(g, "y2"),
 			"arrow", arrow.invoke(null, g), "bits", b == null ? "all" : b[0]);
+	}
+
+	// Better Blueprints 1.0.0 (workshop 3699453096) classes, all by reflection: settlement.room.main.copy.SavedPrints$SavedPrint,
+	// $SavedAreaRoom.of, BBAreaBlueprintAvailability.analyze(SavedPrint) -> Result{warning, tooltip}
+	private static Object bbcheck(String[] a) throws Exception {
+		settlement.room.main.Room r = SETT.ROOMS().map.get(Commands.i(a, 1), Commands.i(a, 2));
+		if (r == null)
+			throw new IllegalArgumentException("no room at " + a[1] + "," + a[2]);
+		settlement.room.main.RoomBlueprintImp locked = null;
+		for (settlement.room.main.RoomBlueprintImp x : Lists.of(SETT.ROOMS().imps()))
+			if (x.key.equalsIgnoreCase(a[3]))
+				locked = x;
+		if (locked == null)
+			throw new IllegalArgumentException("unknown room " + a[3]);
+		Class<?> sp = Class.forName("settlement.room.main.copy.SavedPrints$SavedPrint");
+		Class<?> ar = Class.forName("settlement.room.main.copy.SavedPrints$SavedAreaRoom");
+		Class<?> aj = Class.forName("settlement.room.main.copy.SavedPrints$SavedAreaJob");
+		java.lang.reflect.Constructor<?> fromRoom = sp.getDeclaredConstructor(settlement.room.main.Room.class, int.class, int.class);
+		fromRoom.setAccessible(true);
+		Object print = fromRoom.newInstance(r, Commands.i(a, 1), Commands.i(a, 2));
+		// reboundTo keeps the old type when the furniture doesn't match; the private copy constructor
+		// SavedPrint(SavedPrint, RoomBlueprintImp) sets the type as is (only the type matters for the availability check)
+		java.lang.reflect.Constructor<?> retype = sp.getDeclaredConstructor(sp, settlement.room.main.RoomBlueprintImp.class);
+		retype.setAccessible(true);
+		Object rebound = retype.newInstance(print, locked);
+		Object room = ar.getMethod("of", int.class, int.class, sp).invoke(null, 0, 0, rebound);
+		Object rooms = java.lang.reflect.Array.newInstance(ar, 1);
+		java.lang.reflect.Array.set(rooms, 0, room);
+		java.lang.reflect.Constructor<?> area = sp.getDeclaredConstructor(CharSequence.class, int.class, int.class, rooms.getClass(),
+			java.lang.reflect.Array.newInstance(aj, 0).getClass());
+		area.setAccessible(true);
+		Object areaPrint = area.newInstance("bbcheck", 1, 1, rooms, java.lang.reflect.Array.newInstance(aj, 0));
+		Object res = Class.forName("settlement.room.main.copy.BBAreaBlueprintAvailability").getMethod("analyze", sp).invoke(null, areaPrint);
+		Object blue = sp.getField("blue").get(rebound);
+		return Commands.m("room", r.blueprint().key, "locked", locked.key, "reboundTo", blue == null ? null : ((settlement.room.main.RoomBlueprintImp) blue).key,
+			"techPasses", locked.reqs.passes(game.faction.FACTIONS.player()), "warning", res.getClass().getField("warning").get(res),
+			"tooltip", String.valueOf(res.getClass().getField("tooltip").get(res)));
 	}
 
 	private static Object wsf(String[] a) throws Exception {

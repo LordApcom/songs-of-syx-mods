@@ -51,14 +51,14 @@ All files live in `%APPDATA%\songsofsyx\bridge\`.
 | `start-game.ps1 [-Show] [-Kill] [-Game <folder>]` | Turn the bridge on, start the game minimized (or visible with `-Show`), wait until it answers. `-Kill` closes it. |
 | `new-test-game.ps1 [-Race] [-Seed] [-Capital] [-Landing] [-Save]` | Create a new game from the main menu to a running settlement. |
 | `reload.ps1 -Save <name> [-Mods a,b]` | Close the game, rebuild and redeploy the listed mods, reopen and load a save. Needs `SOS_POLYPHON` set. |
-| `shot.ps1 <file.png>` | Screenshot of the game without showing it on your monitor: the window is restored off-screen without focus, captured and minimized again. |
+| `shot.ps1 <file.png>` | Screenshot of the game without showing it on your monitor: the window is restored off-screen without focus, captured and minimized again. Works with Windows display scaling. |
 
 ## Commands
 Run `help` and `commands` in game for the live list. Coordinates are tiles.
 
-**Game and time** - `ping`, `status`, `screen`, `speed <0|1|2|3|4|half>`, `run <gameSeconds> [speed]` (lets time pass and answers when done; closes notices that would pause the game), `save <name>`, `saves`, `load <name>`, `dismiss` (the "click to continue" screen after loading), `prompt [yes|no]` (the game's yes/no box), `look <x> <y> [zoom]`, `mouse`, `ui <workprio|rooms|close|build <blueprint>|job <road>>`.
+**Game and time** - `ping`, `status`, `screen`, `speed <0|1|2|3|4|half>`, `run <gameSeconds> [speed]` (lets time pass and answers when done; closes notices that would pause the game), `save <name>`, `saves`, `load <name>`, `dismiss` (the "click to continue" screen after loading), `prompt [yes|no]` (the game's yes/no box), `look <x> <y> [zoom]`, `mouse`, `ui <workprio|rooms|close|tools|build <blueprint>|job <road>>` (`ui tools` opens the bottom bar's Tools menu through its cog button and lists the entries).
 
-**Main menu, world generator, landing** - `newgame`, `load <name>`, `continue`, `quit`, `wg info|races|race <key>|terrain [seed]|capital <x> <y>|auto|land|mountain|deepmountain|sea|finish`, `landing [x y|auto]`.
+**Main menu, world generator, landing** - `newgame`, `load <name>`, `continue`, `quit`, `wg info|races|race <key>|terrain [seed]|capital <x> <y>|auto|land|mountain|deepmountain|deepmountain8|sea|rock <pct>|rockthrone <pct>|finish` (`rock`: the spot whose 3x3 world tiles are closest to that mountain share; `rockthrone`: the same for the tile the throne starts on), `landing [x y|auto]`. On the landing screen `resmap`, `ascii` and `tile` also work, to read the map before landing.
 
 **Map and buildings** - `ascii <x> <y> <w> <h>` (text map with legend), `tile <x> <y>`, `rooms`, `room <x> <y>`, `blueprints [filter]`, `place <blueprint> <x> <y> [w h] [item=group,x,y[,rot[,size]]] [door=x,y]` (same path as the build menu), `job <tool|road:key> <x> <y> <w> <h> [overwrite]` (roads, walls, clearing, tunnels...), `plan [on|off]` (planning mode), `finish [x y w h]`, `stock list|alloc`, `work list|prio|target`.
 
@@ -74,7 +74,8 @@ Run `help` and `commands` in game for the live list. Coordinates are tiles.
 - `gate list|set ...` - Species Customs Gate filters.
 - `wsf tool|probe|set ...` - Workplace Species Filter per building.
 - `fts road [on|off]`, `fts fish <x> <y>`, `fts pillars <blueprint> <x> <y> <w> <h>`, `fts housescan <blueprint> <group> <size> <x1> <y1> <x2> <y2>` - Fixing the Syx: the code behind its keys and clicks, plus a dry-run placement scan.
-- `cdstate`, `cdregroup <humanId>` - Cartographer's Dream: island/dock state, boats, invaders, goods lying on the ground.
+- `cdstate`, `cdregroup <humanId>` - Cartographer's Dream: island/dock state, boats, invaders, goods lying on the ground. `cdprobe <x> <y>`, `cdfind [n]`, `cdcarve <x> <y>` - its start-area carve on a real map: what it would see at a spot, spots of each kind (valley, small pocket, solid rock), and running the installed carve at a spot.
+- `bbcheck <x> <y> <lockedRoomKey>` - with Better Blueprints (another author's mod) and Plan Ahead: whether its area-blueprint list would warn that a locked room "will be skipped".
 
 ## Tips for testing with an AI agent
 - Compare the same scenario **with and without** the mod you're testing, and count results (people, tiles, goods), instead of reading one case.

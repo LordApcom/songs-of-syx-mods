@@ -25,6 +25,7 @@ final class Registry {
 		ModDebug.register();
 		ModTrade.register();
 		ModMods.register();
+		ModCarve.register();
 		ModMilitary.register();
 	}
 

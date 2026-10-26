@@ -131,7 +131,38 @@ final class Commands {
 				VIEW.s().tools.place(p);
 				return m("tool", a[2]);
 			}
-			throw new IllegalArgumentException("ui workprio | ui rooms | ui close | ui build <blueprint> | ui job <roadKey>");
+			if (what.equals("tools")) { // the bottom bar's cog: view/sett/ui/bottom/UIBuildPanel.java:93 inter.set(this, sec)
+				snake2d.util.gui.GuiSection section = vizardalpha.polyphon.api.Shadow.get(VIEW.s().ui.bottom, "section");
+				for (snake2d.util.gui.renderable.RENDEROBJ e : Lists.of(section.elements())) {
+					if (!(e instanceof snake2d.util.gui.GuiSection bar))
+						continue;
+					for (snake2d.util.gui.renderable.RENDEROBJ b : Lists.of(bar.elements())) {
+						java.lang.reflect.Field fs, fi;
+						try {
+							fs = b.getClass().getDeclaredField("val$sec");
+							fi = b.getClass().getDeclaredField("val$inter");
+						} catch (NoSuchFieldException x) {
+							continue;
+						}
+						fs.setAccessible(true);
+						fi.setAccessible(true);
+						Object sec = fs.get(b), inter = fi.get(b);
+						if (!sec.getClass().getName().equals("view.sett.ui.bottom.Options"))
+							continue;
+						java.lang.reflect.Method set = inter.getClass().getDeclaredMethod("set", snake2d.util.gui.clickable.CLICKABLE.class, snake2d.util.gui.clickable.CLICKABLE.class);
+						set.setAccessible(true);
+						set.invoke(inter, b, sec);
+						snake2d.util.gui.GuiSection p = (snake2d.util.gui.GuiSection) sec;
+						java.util.List<Object> items = new java.util.ArrayList<>();
+						for (snake2d.util.gui.renderable.RENDEROBJ it : Lists.of(p.elements()))
+							items.add(it.getClass().getName() + " @" + it.body().x1() + "," + it.body().y1() + " " + it.body().width() + "x" + it.body().height());
+						return m("opened", "tools", "panel", p.body().x1() + "," + p.body().y1() + " " + p.body().width() + "x" + p.body().height(),
+							"screen", init.constant.C.WIDTH() + "x" + init.constant.C.HEIGHT(), "items", items);
+					}
+				}
+				throw new IllegalStateException("tools button not found");
+			}
+			throw new IllegalArgumentException("ui workprio | ui rooms | ui close | ui build <blueprint> | ui job <roadKey> | ui tools");
 		}
 		case "prompt": { // the game's yes/no question box (view/interrupter/IPromtYesNO.java); answering = clicking its button
 			view.interrupter.IPromtYesNO q = VIEW.inters().yesNo;

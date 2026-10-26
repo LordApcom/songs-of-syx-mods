@@ -8,8 +8,11 @@ Add-Type -Namespace S -Name W -MemberDefinition @'
 [DllImport("user32.dll")] public static extern bool SetWindowPos(System.IntPtr h, System.IntPtr after, int x, int y, int cx, int cy, uint f);
 [DllImport("user32.dll")] public static extern bool PrintWindow(System.IntPtr h, System.IntPtr dc, uint f);
 [DllImport("user32.dll")] public static extern bool GetClientRect(System.IntPtr h, out RECT r);
+[DllImport("user32.dll")] public static extern bool SetProcessDPIAware();
 public struct RECT { public int L, T, R, B; }
 '@
+# Without this, Windows display scaling (e.g. 125%) reports a smaller client size and only the top-left part is captured.
+[S.W]::SetProcessDPIAware() | Out-Null
 $p = Get-CimInstance Win32_Process -Filter "Name = 'java.exe'" | Where-Object { $_.CommandLine -match 'SongsOfSyx|init\.Main' } |
     ForEach-Object { Get-Process -Id $_.ProcessId } | Where-Object { $_.MainWindowHandle -ne 0 } | Select -First 1
 if (-not $p) { throw 'game window not found' }
