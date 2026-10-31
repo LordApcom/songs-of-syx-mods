@@ -4,6 +4,10 @@
   "mixins": [
     "CapitalPlacementMixin",
     "PathGraphMixin",
+    "LandingLinkMixin",
+    "ArrivalPassMixin",
+    "MountainFillMixin",
+    "MountainFillMixin$SamplePoints",
     "ThroneCarveMixin",
     "EntryPointsMixin",
     "EntryFinderMixin",
